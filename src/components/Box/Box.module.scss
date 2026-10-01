@@ -1,0 +1,26 @@
+
+
+
+.box {
+    padding: var(--space-lg);
+    background-color: var(--color-primary);
+    @include border-radius(var(--radius-md));
+  }
+  
+  .title {
+    margin: 0 0 var(--space-sm);
+    @include font-dm-sans(
+      var(--font-size-xl),
+      var(--font-weight-bold),
+      var(--line-height-tight)
+    );
+  }
+  
+  .text {
+    margin: 0;
+    @include font-dm-sans(
+      var(--font-size-md),
+      var(--font-weight-regular),
+      var(--line-height-normal)
+    );
+  }

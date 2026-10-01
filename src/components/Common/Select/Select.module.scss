@@ -1,0 +1,15 @@
+.select {
+  appearance: none;
+}
+
+.caret {
+  position: absolute;
+  top: 12px;
+  right: var(--space-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+}

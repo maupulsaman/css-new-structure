@@ -1,0 +1,17 @@
+.toggle {
+  position: fixed;
+  top: var(--space-md);
+  right: var(--space-md);
+  z-index: 1;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-background);
+  color: var(--color-text-heading);
+  cursor: pointer;
+
+  @include font-dm-sans(
+    var(--font-size-sm),
+    var(--font-weight-medium),
+    var(--line-height-tight)
+  );
+}

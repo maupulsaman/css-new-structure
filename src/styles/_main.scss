@@ -1,0 +1,75 @@
+@use "./tokens/mixins" as *;
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-dm-sans);
+}
+
+// Headings
+
+h1 {
+  margin: 0 0 var(--space-lg);
+
+  @include font-dm-sans(
+    var(--font-size-3xl),
+    var(--font-weight-bold),
+    var(--line-height-tight)
+  );
+}
+
+h2 {
+  margin: 0 0 var(--space-md);
+
+  @include font-dm-sans(
+    var(--font-size-2xl),
+    var(--font-weight-bold),
+    var(--line-height-tight)
+  );
+}
+
+h3 {
+  margin: 0 0 var(--space-md);
+
+  @include font-dm-sans(
+    var(--font-size-xl),
+    var(--font-weight-semibold),
+    var(--line-height-tight)
+  );
+}
+
+h4 {
+  margin: 0 0 var(--space-sm);
+
+  @include font-dm-sans(
+    var(--font-size-lg),
+    var(--font-weight-semibold),
+    var(--line-height-normal)
+  );
+}
+
+h5 {
+  margin: 0 0 var(--space-sm);
+
+  @include font-dm-sans(
+    var(--font-size-md),
+    var(--font-weight-semibold),
+    var(--line-height-normal)
+  );
+}
+
+h6 {
+  margin: 0 0 var(--space-sm);
+
+  @include font-dm-sans(
+    var(--font-size-sm),
+    var(--font-weight-semibold),
+    var(--line-height-normal)
+  );
+}

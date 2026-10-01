@@ -1,0 +1,103 @@
+.screen {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 50px 34px;
+  background-color: var(--color-background);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 94px;
+  width: 360px;
+}
+
+.top {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 18px;
+  width: 100%;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xl);
+  width: 100%;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 328px;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 42px;
+}
+
+.title {
+  margin: 0;
+  color: var(--color-text-heading);
+  @include font-dm-sans(
+    30px,
+    var(--font-weight-semibold),
+    var(--line-height-tight)
+  );
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--color-text-muted);
+  @include font-dm-sans(
+    var(--font-size-md),
+    var(--font-weight-regular),
+    var(--line-height-tight)
+  );
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 100%;
+}
+
+.eye {
+  position: absolute;
+  top: 12px;
+  right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.forgot {
+  color: var(--color-link);
+  text-decoration: underline;
+  @include font-dm-sans(
+    var(--font-size-sm),
+    var(--font-weight-medium),
+    var(--line-height-tight)
+  );
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  width: 100%;
+}
