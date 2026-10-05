@@ -1,0 +1,690 @@
+---
+
+description: Implement React JSX screens from Figma MCP according to the existing React, Webpack, SCSS Modules, design-token, and reusable-component architecture.
+globs: ["**/*.jsx", "**/*.scss", "**/*.css"]
+alwaysApply: false
+------------------
+
+# Figma MCP Screen Implementation Rules
+
+## Purpose
+
+When implementing a screen, page, section, or component from Figma using the Figma MCP server, follow the existing project architecture first and translate the Figma design into maintainable React JSX and SCSS Modules.
+
+Do not treat the Figma output as standalone code.
+
+The existing codebase and design system are the primary implementation structure.
+
+---
+
+## 1. Required workflow
+
+Before creating code:
+
+1. Inspect the Figma design context for the exact selected frame/node.
+2. Inspect the Figma screenshot for visual reference.
+3. Inspect the existing project architecture before creating files.
+4. Search for existing reusable components that match the Figma elements.
+5. Search for existing SCSS tokens, mixins, utilities, and component styling patterns.
+6. Reuse existing implementation patterns whenever possible.
+7. Only create new components, styles, tokens, or mixins when the existing architecture cannot satisfy the design.
+
+Do not immediately generate code from the Figma response without inspecting the repository.
+
+After the imported components are written, automatically run the `scss-reviewer` subagent on the new and changed SCSS. Do not ask the user to type `/scss-reviewer`. The reviewer only reports findings and must not edit files.
+
+---
+
+## 2. Current project architecture
+
+The project uses:
+
+* React
+* JSX
+* Webpack
+* SCSS
+* SCSS Modules
+* Global CSS custom-property design tokens
+* Global Sass mixins injected through Webpack `sass-loader`
+* Reusable React components
+* Material UI where appropriate
+
+Expected structure:
+
+```text
+public/
+  └── ...
+
+src/
+  ├── assets/
+  │   └── svg/
+  │       ├── caret-down.svg
+  │       └── eye-show.svg
+  ├── components/
+  │   ├── common/
+  │   │   ├── Button/
+  │   │   │   ├── Button.jsx
+  │   │   │   └── Button.module.scss
+  │   │   └── TextField/
+  │   │       ├── TextField.jsx
+  │   │       └── TextField.module.scss
+  │   └── ScreenName/
+  │       ├── ScreenName.jsx
+  │       └── ScreenName.module.scss
+  │
+  └── styles/
+      ├── main.scss
+      └── tokens/
+          ├── _colors.scss
+          ├── _spacing.scss
+          ├── _typography.scss
+          ├── _radius.scss
+          └── _mixins.scss
+```
+
+Follow the actual repository structure if it differs.
+
+Never invent a new styling architecture when an existing one is already present.
+
+---
+
+## 3. React implementation
+
+Use JSX functional components.
+
+Prefer:
+
+```jsx
+export default function ComponentName() {
+  return (
+    <div className={styles.component}>
+      ...
+    </div>
+  );
+}
+```
+
+Avoid:
+
+* class components for new work
+* inline styles
+* unnecessary wrapper elements
+* large monolithic components
+* duplicated JSX for visually similar elements
+
+Break a complex Figma screen into logical reusable components.
+
+Example:
+
+```text
+Screen
+├── Header
+├── Hero
+├── SearchBar
+├── Filter
+├── CardGrid
+│   └── Card
+└── Footer
+```
+
+Do not create a separate component for every small visual element unless it has reusable behavior, repeated structure, or clear architectural value.
+
+Shared controls must not be declared inside a screen file. Put them in `src/components/common/`.
+
+Examples: `TextField`, `Button`, `Select`, `Checkbox`, `Modal`.
+
+```text
+src/components/common/Button/Button.jsx
+src/components/common/Button/Button.module.scss
+src/components/common/TextField/TextField.jsx
+src/components/common/TextField/TextField.module.scss
+```
+
+A screen imports the common component. It does not define a local copy.
+
+---
+
+## 4. Reuse existing components first
+
+Before creating a component from Figma, search `src/components/common` and the rest of the repository for an existing equivalent.
+
+Examples:
+
+* Button
+* Input
+* Select
+* Checkbox
+* Radio
+* Modal
+* Card
+* Tabs
+* Table
+* Header
+* Footer
+* Breadcrumb
+* Form controls
+* Typography components
+* Layout components
+
+If an existing shared component matches the design, use it.
+
+Do not create:
+
+```text
+FigmaButton.jsx
+NewButton.jsx
+PrimaryButton.jsx
+```
+
+when a shared `Button` component already exists.
+
+If the existing component requires a small extension, prefer extending the existing component rather than duplicating it.
+
+---
+
+## 5. Figma components and variables
+
+When Figma exposes components, variables, styles, or design tokens through MCP:
+
+* Prefer mapping them to existing project components and tokens.
+* Reuse existing project tokens when they represent the same design concept.
+* Do not create duplicate tokens for values already present in the repository.
+* Do not hardcode colors in component SCSS. If a color token already exists, use it. If it does not exist, add a new token in the color token file and use that variable.
+* Do not create new global spacing, radius, or typography tokens for a one-off component value unless there is a real design-system reason.
+
+Example:
+
+Figma color:
+
+```text
+#1976D2
+```
+
+If the project already contains:
+
+```scss
+--color-primary: #1976d2;
+```
+
+use:
+
+```scss
+background-color: var(--color-primary);
+```
+
+Do not write:
+
+```scss
+background-color: #1976d2;
+```
+
+for the new component.
+
+---
+
+## 6. SCSS Modules
+
+Every new component-specific stylesheet should use SCSS Modules:
+
+```text
+ComponentName.module.scss
+```
+
+React JSX should import:
+
+```jsx
+import styles from "./ComponentName.module.scss";
+```
+
+Use:
+
+```jsx
+className={styles.container}
+```
+
+Do not use arbitrary global component classes when a CSS Module is appropriate.
+
+Do not create component styles in `main.scss`.
+
+Global styles belong in the project's global stylesheet.
+
+---
+
+## 7. Design tokens
+
+Use existing CSS custom-property tokens whenever possible.
+
+Examples:
+
+```scss
+var(--color-primary)
+var(--color-background)
+var(--color-text-primary)
+
+var(--space-sm)
+var(--space-md)
+var(--space-lg)
+var(--space-xl)
+
+var(--radius-sm)
+var(--radius-md)
+var(--radius-lg)
+
+var(--font-size-sm)
+var(--font-size-md)
+var(--font-size-lg)
+var(--font-size-xl)
+
+var(--font-weight-regular)
+var(--font-weight-medium)
+var(--font-weight-semibold)
+var(--font-weight-bold)
+```
+
+Do not hardcode a color in a component. Use an existing color token, or add the missing color to the color token file first. Do not hardcode other design-system values when an existing token is available.
+
+Prefer:
+
+```scss
+padding: var(--space-md);
+```
+
+instead of:
+
+```scss
+padding: 16px;
+```
+
+Prefer:
+
+```scss
+color: var(--color-text-primary);
+```
+
+instead of:
+
+```scss
+color: #1a1a1a;
+```
+
+---
+
+## 8. One-off values
+
+Do not hardcode colors. A color used by a component must be a token in the color token file.
+
+If the value already exists, use that token. If it does not exist, add a new token. Do not add a second token for a value that is already declared.
+
+Do not force every Figma spacing, radius, or typography value into a global token.
+
+For a genuine one-off spacing, radius, or typography value, a local CSS value is acceptable when necessary.
+
+Example:
+
+```scss
+.special-banner {
+  margin-top: 6px;
+}
+```
+
+Do not change:
+
+```scss
+--space-sm: 8px;
+```
+
+just because one component requires `6px`.
+
+Changing a global token must not be used to fix a single component.
+
+---
+
+## 9. Typography
+
+Use the existing global typography mixins.
+
+Example:
+
+```scss
+.title {
+  @include font-dm-sans(
+    var(--font-size-xl),
+    var(--font-weight-bold),
+    var(--line-height-tight)
+  );
+}
+```
+
+Do not create a new font mixin if `font-dm-sans` or an equivalent existing mixin already exists.
+
+Do not duplicate the font-family declaration in every component.
+
+Do not import the global mixin inside every module when the project's Webpack configuration already injects the mixin globally.
+
+---
+
+## 10. Spacing
+
+Map Figma spacing to existing spacing tokens where appropriate.
+
+Example:
+
+Figma:
+
+```text
+24px
+```
+
+Existing token:
+
+```scss
+--space-lg: 24px;
+```
+
+Use:
+
+```scss
+margin-bottom: var(--space-lg);
+```
+
+When one component needs a different value from the same shared token, change only that component's declaration.
+
+Do not change the global spacing token unless the design-system value itself is intentionally changing.
+
+---
+
+## 11. Border radius
+
+Reuse existing radius tokens.
+
+Example:
+
+```scss
+border-radius: var(--radius-md);
+```
+
+Do not create a new radius token if an existing token represents the same value.
+
+Do not create a new radius mixin just for a standard radius value.
+
+---
+
+## 12. Layout
+
+Prefer the layout method that best matches the Figma design and existing project conventions.
+
+Use:
+
+* Flexbox
+* CSS Grid
+* existing layout components
+* existing spacing utilities
+
+Do not reproduce Figma absolute positioning blindly.
+
+Avoid excessive:
+
+```scss
+position: absolute;
+top: ...;
+left: ...;
+```
+
+unless the design actually requires positioned elements.
+
+---
+
+## 13. Material UI
+
+If the project already uses Material UI and a Figma element corresponds to an existing MUI component:
+
+* Prefer the existing MUI component.
+* Customize it using the project's established styling approach.
+* Do not recreate a standard MUI component from scratch without a reason.
+
+For example, use the existing `Button`, `Dialog`, `TextField`, `Checkbox`, or `Select` implementation when appropriate.
+
+Do not introduce a second component library.
+
+---
+
+## 14. Class naming
+
+Use clear component-scoped class names.
+
+Because SCSS Modules already provide local scoping, names do not need to be globally unique.
+
+Good:
+
+```scss
+.container {}
+.header {}
+.title {}
+.actions {}
+```
+
+Avoid meaningless names:
+
+```scss
+.a {}
+.box1 {}
+.div123 {}
+```
+
+Follow an existing naming convention if the repository already has one.
+
+Do not introduce a new BEM convention if the current project is already using SCSS Modules without BEM.
+
+---
+
+## 15. Responsive design
+
+Inspect the Figma design for desktop, tablet, and mobile variants when available.
+
+Implement responsive behavior using the project's existing breakpoint conventions.
+
+Do not invent arbitrary breakpoints when existing project breakpoints are available.
+
+Do not only reproduce the desktop screenshot.
+
+Check:
+
+* width
+* spacing
+* typography
+* stacking
+* visibility
+* alignment
+* overflow
+* grid columns
+* navigation behavior
+
+---
+
+## 16. Accessibility
+
+Generated UI must include appropriate accessibility behavior.
+
+Examples:
+
+* use semantic HTML
+* buttons must be buttons
+* links must be links
+* images must have meaningful `alt` text where required
+* form controls require accessible labels
+* interactive elements must be keyboard accessible
+* do not rely only on color to communicate state
+* maintain sufficient text/background contrast
+
+Do not replace semantic elements with clickable generic `div` elements.
+
+---
+
+## 17. Assets
+
+When Figma MCP provides a real image, SVG, or asset source:
+
+* use the provided asset when appropriate
+* do not replace a supplied asset with a placeholder
+* do not add a new icon library when the required icon/asset is already provided
+* do not recreate an existing asset using CSS unless necessary
+
+SVG icons belong in `src/assets/svg/`.
+
+```text
+src/assets/svg/caret-down.svg
+src/assets/svg/eye-show.svg
+```
+
+Do not place an SVG icon in a feature folder such as `src/assets/login/` or `src/assets/common/`.
+
+Import it from the shared folder:
+
+```jsx
+import caretDown from "../../assets/svg/caret-down.svg"
+```
+
+---
+
+## 18. Do not hardcode unnecessarily
+
+Do not hardcode colors in component styles. Use `var(--color-...)`.
+
+If no color token matches, add one to the color token file. Do not duplicate an existing color variable.
+
+Avoid hardcoding spacing, typography, radius, and repeated dimensions when an equivalent token already exists.
+
+Bad:
+
+```scss
+.card {
+  padding: 24px;
+  color: #1a1a1a;
+  border-radius: 8px;
+}
+```
+
+Better:
+
+```scss
+.card {
+  padding: var(--space-lg);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-md);
+}
+```
+
+---
+
+## 19. Existing SCSS architecture must be inspected
+
+Before creating or modifying SCSS:
+
+* inspect existing token files
+* inspect existing mixins
+* inspect global styles
+* inspect reusable utilities
+* inspect similar components
+* inspect existing responsive patterns
+* inspect existing component SCSS Modules
+
+Reuse existing patterns.
+
+Do not create:
+
+* duplicate variables
+* duplicate mixins
+* duplicate color tokens
+* duplicate spacing scales
+* duplicate typography systems
+* duplicate utility classes
+
+unless necessary.
+
+---
+
+## 20. Do not blindly copy Figma MCP generated code
+
+Figma MCP output is a design reference and implementation input.
+
+It is not automatically the project's final architecture.
+
+Do not copy generated code blindly when it conflicts with:
+
+* existing components
+* design tokens
+* SCSS Modules
+* project folder structure
+* accessibility requirements
+* responsive conventions
+* Webpack conventions
+
+Adapt the implementation to the existing project.
+
+---
+
+## 21. Final implementation check
+
+After implementing the screen:
+
+1. Verify that all required Figma sections are present.
+2. Verify spacing and alignment against the Figma screenshot.
+3. Verify typography.
+4. Verify colors and tokens.
+5. Verify responsive behavior.
+6. Verify assets.
+7. Verify accessibility.
+8. Verify that existing shared components were reused.
+9. Verify that no unnecessary global styles were introduced.
+10. Verify that no duplicate tokens or mixins were created.
+11. Verify that component SCSS remains inside `.module.scss`.
+12. Verify that the implementation builds without Sass/Webpack errors.
+13. Automatically run `scss-reviewer` on the imported components and include its findings.
+
+Do not declare the screen complete until the implementation has been visually compared with the Figma reference.
+
+---
+
+## 22. File creation rule
+
+When a new Figma screen is requested:
+
+1. Identify the screen/page component.
+2. Identify reusable child components such as inputs, buttons, and selects.
+3. Reuse a matching component from `src/components/common` when one exists.
+4. Create a missing shared control in `src/components/common`, not inside the screen file.
+5. Create a matching `.module.scss` for component-specific styles.
+6. Use existing global tokens.
+7. Use existing global mixins.
+8. Update global styles only when a genuinely global change is required.
+
+Example:
+
+```text
+components/
+├── common/
+│   ├── Button/
+│   │   ├── Button.jsx
+│   │   └── Button.module.scss
+│   └── TextField/
+│       ├── TextField.jsx
+│       └── TextField.module.scss
+└── AccountSummary/
+    ├── AccountSummary.jsx
+    └── AccountSummary.module.scss
+```
+
+Do not put component-specific CSS in `main.scss`.
+
+---
+
+## 23. Completion response
+
+After implementation, briefly report:
+
+* files created/modified
+* existing components reused
+* new tokens/mixins created, if any
+* any Figma details that could not be reproduced exactly
+
+Do not provide a long explanation unless requested.

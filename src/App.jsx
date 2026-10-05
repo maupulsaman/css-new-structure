@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import Login from './pages/Login/Login'
-import styles from './App.module.scss'
 import './styles/globals.scss'
 
 function App() {
@@ -17,7 +16,7 @@ function App() {
   return (
     <>
       <Login />
-      <button className={styles.toggle} type="button" onClick={toggleTheme}>
+      <button  type="button" onClick={toggleTheme}>
         Toggle Theme
       </button>
     </>

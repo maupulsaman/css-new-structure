@@ -1,6 +1,4 @@
 
-
-
 .box {
     padding: var(--space-lg);
     background-color: var(--color-primary);
@@ -14,6 +12,9 @@
       var(--font-weight-bold),
       var(--line-height-tight)
     );
+    @include mobile {
+      font-size: var(--font-size-lg);
+    }
   }
   
   .text {
